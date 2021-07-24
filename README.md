@@ -78,6 +78,12 @@ In order to run all the benchmarks containing in the foloder <Benchmarks> and pr
 
 `./run_bench.sh  <Benchmarks>`
 
+The results will be in `result.txt`
+## References
+
+
+`An iterative approach to precondition inference using constrained Horn clauses`, TPLP-18 by Bishoksan Kafle, John P. Gallagher, Graeme Gange, Peter Schachte, Harald Søndergaard and  Peter J. Stuckey.
+
 
 ## Contact
 
