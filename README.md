@@ -22,8 +22,7 @@ from git repository with `./ciao-boot.sh local-install`)
 
 You can automatically fetch, build, and install NtHorn using:
 
-```ciao get github.com/bishoksan/NtHorn
-```
+`ciao get github.com/bishoksan/NtHorn`
 
 The following dependendencies (including third-party code) will be
 installed automatically:
@@ -49,23 +48,25 @@ calling `ciao fetch` at the source directory.
 
 ## Usage
 
-**Usage**: `pihorn` \<*input file containing a set of Horn clauses*\>
+**Usage**: `nthorn` \<*input file containing a set of Horn clauses*\> [Options]
 
 **Input**: a set of Horn clauses together with `special clauses` for distinguished set of predicates. They
 are written using Prolog notation:
 
 e.g. a clause is written as: `h(X):- C, b1(X1),...,bn(Xn).` where `C` is a comma separated linear arithmetic constraints (`X>=10, Y=X+1`)
 
-The distinguished predicates are `init(X)` (encodes the set of initial states), 'false' (encodes the set of unsafe states) and `safe` (encodes the set of safe terminating states). The `special clauses` are clauses of the above form with these distinugished predicates on the head, e.g.,  `false :- C, b1(X1),...,bn(Xn).` For technical reasons, we introduce two clauses, viz., `spec:- false.` and `spec:- safe.`, defining specification predicates.
+The distinguished predicate is `init(X)` (encodes the set of initial states). The `special clauses` for this are clauses of the above form with these distinugished predicates on the head, e.g.,  `init(X) :- C, b1(X1),...,bn(Xn).` 
 
-**Output**: Sufficient preconditions for safety and unsafety of programs in terms of initial state variables.
+**Options**: `-pe` (for control flow refinement with partial evaluation)
+                     `-clssplit` (clause splitting using potential ranking function)
+**Output**: Sufficient preconditions for non-termination of program in terms of initial state variables.
 
 
 ## Generate a standalone binary distribution
 
 ```sh
 mkdir dist; cd dist
-ciaoc_sdyn ../src/pihorn
+ciaoc_sdyn ../src/nthorn
 cp ../src/determinise.jar
 ```
 
@@ -76,9 +77,9 @@ dependencies.
 ## Using script to run the benchmarks
 In order to run all the benchmarks containing in the foloder <Benchmarks> and produce statistics, please run the command
 
-`./run_bench.sh  <Benchmarks>`
+`./nthorn_run_bench.sh  <Benchmarks>`
 
-The results will be in `result.txt`
+The results will be in `result_non-termination.txt`
 ## References
 
 
