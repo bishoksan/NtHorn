@@ -153,18 +153,18 @@ recognised_option('-debug-temps', debug_temps, []).
 recognised_option('-init', preserveInitPred,[]).
 
 main(ArgV) :-
-	precond_non_termination:get_options(ArgV,Options,Args0),
+	nthorn:get_options(ArgV,Options,Args0),
 	( member(help, Options) ->
 	    displayHelpMenu
 	; \+ Args0 = [_] -> % wrong args
 	    displayHelpMenu
 	; Args0 = [F],
-	  precond_non_termination:cleanup,
+	  nthorn:cleanup,
 	  main_(Options, F)
 	).
 
 cleanup :-
-	retractall_fact(precond_non_termination:flag(_)),
+	retractall_fact(nthorn:flag(_)),
     retractall_fact(trConstrSafe(_)),
     retractall_fact(trConstrSafeAcc(_)),
     retractall_fact(trConstr(_)),
@@ -196,23 +196,23 @@ main_(Options, Prog) :-
 	; WithInterpolant = no
 	),
 	( member(array, Options) ->
-	    assertz_fact(precond_non_termination:flag(array))
+	    assertz_fact(nthorn:flag(array))
 	; true
 	),
 	( member(raf, Options) ->
-	    assertz_fact(precond_non_termination:flag(raf))
+	    assertz_fact(nthorn:flag(raf))
 	; true
 	),
 	( member(pe, Options) ->
-	    assertz_fact(precond_non_termination:flag(pe))
+	    assertz_fact(nthorn:flag(pe))
 	; true
 	),
 	( member(clssplit, Options) ->
-	    assertz_fact(precond_non_termination:flag(clssplit))
+	    assertz_fact(nthorn:flag(clssplit))
 	; true
 	),
 	( member(uf, Options) ->
-	    assertz_fact(precond_non_termination:flag(uf))
+	    assertz_fact(nthorn:flag(uf))
 	; true
 	),
 	( member(bounded(N), Options) ->
@@ -224,9 +224,9 @@ main_(Options, Prog) :-
 	    assertz_fact(opt_debug_temps)
 	; true
 	),
-	retractall_fact(precond_non_termination:flag(verbose)),
+	retractall_fact(nthorn:flag(verbose)),
 	( member(verbose, Options) ->
-	    assertz_fact(precond_non_termination:flag(verbose))
+	    assertz_fact(nthorn:flag(verbose))
 	; true
 	),
     (member(preserveInitPred,Options), assert(preserveInitPred)
@@ -250,7 +250,7 @@ pe(Prog,  F_Threshold, OutputFile):-
 % ---------------------------------------------------------------------------
 
 preProcessHorn(Prog2, F_Int, F_QA, QACPA, F_WidenPoints, F_Threshold, OutputFile,F_Split):-
-	precond_non_termination:verbose_opts(VerbOpts),
+	nthorn:verbose_opts(VerbOpts),
     (flag(clssplit)->
         verbose_message(['Clause splitting transformation']),
         split_clauses(Prog2, F_Split),
@@ -258,7 +258,7 @@ preProcessHorn(Prog2, F_Int, F_QA, QACPA, F_WidenPoints, F_Threshold, OutputFile
     ;
         Prog=Prog2
     ),
-    ( precond_non_termination:flag(pe) ->
+    ( nthorn:flag(pe) ->
         verbose_message(['property based abstraction using PE']),
     pe(Prog,  F_Threshold,F_Int),
     Prog2Int = F_Int
@@ -283,7 +283,7 @@ preProcessHorn(Prog2, F_Int, F_QA, QACPA, F_WidenPoints, F_Threshold, OutputFile
 % ---------------------------------------------------------------------------
 
 verifyCPA(Prog, F_Int, F_QA, QACPA, F_CPA, OutputFile, F_WidenPoints, F_Traceterm, F_Threshold,Result,F_Split) :-
-	precond_non_termination:verbose_opts(VerbOpts),
+	nthorn:verbose_opts(VerbOpts),
     verbose_message(['preprocessing clauses']),
 	preProcessHorn(Prog, F_Int, F_QA, QACPA, F_WidenPoints, F_Threshold, OutputFile,F_Split),
 	verbose_message(['Checking for the presence of false clauses']),
@@ -323,7 +323,7 @@ determinise_jar(Path) :-
 % ---------------------------------------------------------------------------
 
 refineHorn(F_SP, F_FTA, F_DFTA, F_SPLIT, F_TRACETERM, F_REFINE, WithInterpolant):-
-	precond_non_termination:verbose_opts(VerbOpts),
+	nthorn:verbose_opts(VerbOpts),
         verbose_message(['Generate FTA from program and error trace']),
         genfta:main(['-prg', F_SP, '-trace', F_TRACETERM, '-o', F_FTA]),
         ( WithInterpolant=yes ->
@@ -333,7 +333,7 @@ refineHorn(F_SP, F_FTA, F_DFTA, F_SPLIT, F_TRACETERM, F_REFINE, WithInterpolant)
         ),
 	%
 	determinise_jar(DeterminiseJar),
-	( precond_non_termination:flag(verbose) ->
+	( nthorn:flag(verbose) ->
 	    DeterminiseOpts = []
 	; DeterminiseOpts = [stdout(null)]
 	),
