@@ -50,15 +50,16 @@ calling `ciao fetch` at the source directory.
 
 **Usage**: `nthorn` \<*input file containing a set of Horn clauses*\> [Options]
 
-**Input**: a set of Horn clauses together with `special clauses` for distinguished set of predicates. They
+**Input**: a set of Horn clauses together with `special clauses` for a distinguished predicate  `init(X)`. They
 are written using Prolog notation:
 
 e.g. a clause is written as: `h(X):- C, b1(X1),...,bn(Xn).` where `C` is a comma separated linear arithmetic constraints (`X>=10, Y=X+1`)
 
-The distinguished predicate is `init(X)` (encodes the set of initial states). The `special clauses` for this are clauses of the above form with these distinugished predicates on the head, e.g.,  `init(X) :- C, b1(X1),...,bn(Xn).` 
+ The `special clauses` are of the form  `init(X) :- C, b1(X1),...,bn(Xn).` 
 
-**Options**: `-pe` (for control flow refinement with partial evaluation)
+**Options**: `-pe` (for control flow refinement with partial evaluation), 
                      `-clssplit` (clause splitting using potential ranking function)
+                     
 **Output**: Sufficient preconditions for non-termination of program in terms of initial state variables.
 
 
@@ -70,7 +71,7 @@ ciaoc_sdyn ../src/nthorn
 cp ../src/determinise.jar
 ```
 
-This creates a platform specific binary `pihorn` at `dist/`
+This creates a platform specific binary `nthorn` at `dist/`
 directory, together with the collection of shared libraries for the
 dependencies.
 
@@ -80,10 +81,6 @@ In order to run all the benchmarks containing in the foloder <Benchmarks> and pr
 `./nthorn_run_bench.sh  <Benchmarks>`
 
 The results will be in `result_non-termination.txt`
-## References
-
-
-`An iterative approach to precondition inference using constrained Horn clauses`, TPLP-18 by Bishoksan Kafle, John P. Gallagher, Graeme Gange, Peter Schachte, Harald Søndergaard and  Peter J. Stuckey.
 
 
 ## Contact
