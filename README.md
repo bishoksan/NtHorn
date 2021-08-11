@@ -35,6 +35,8 @@ installed automatically:
    (`ciao get github.com/jfmc/ciao_yices`)
 3. [CHCLibs](https://github.com/bishoksan/chclibs)
    (`ciao get github.com/bishoksan/chclibs`)
+4. [RAHFT] (https://github.com/bishoksan/RAHFT)   
+   (`ciao get github.com/bishoksan/RAHFT`)
 
 All code will be downloaded and built under the first directory
 specified in the `CIAOPATH` environment variable or `~/.ciao` by
@@ -68,7 +70,6 @@ e.g. a clause is written as: `h(X):- C, b1(X1),...,bn(Xn).` where `C` is a comma
 ```sh
 mkdir dist; cd dist
 ciaoc_sdyn ../src/nthorn
-cp ../src/determinise.jar
 ```
 
 This creates a platform specific binary `nthorn` at `dist/`
