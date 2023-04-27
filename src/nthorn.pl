@@ -130,7 +130,7 @@ Options:
  -model       show model
  -array       enable array constraints
  -sp          only horn specialization
- -itr N       limit abstract refine iterations 
+ -itr N       limit abstract refine iterations
 
  -debug-temps    keep files for intermediate passes (debug)
  -init           preserves init predicates during transformations
@@ -373,6 +373,7 @@ printNonTermOutput(LogS, Prog, PrecondNT,  InterpolantOption, Time):-
     printNonTermOutput_(user_output, Prog, PrecondNT,  InterpolantOption, Time).
 
 printNonTermOutput_(LogS, Prog, PrecondNT,  InterpolantOption, Time):-
+/*
 	format(LogS, '[solver(Non-Termination-Horn), ', []),
 	format(LogS, 'program(~q), ', [Prog]),
 	format(LogS, 'precond-safe(~w), ', [PrecondNT]),
@@ -382,7 +383,13 @@ printNonTermOutput_(LogS, Prog, PrecondNT,  InterpolantOption, Time):-
     ; I = '-noint'),
 
     format(LogS, 'option(~q), ', [I]),
-	format(LogS, 'time(~w, ms)]. ~n', [Time]).
+	format(LogS, 'time(~w, ms)]. ~n', [Time])
+	*/
+	Time1 is Time/1000,
+	format(LogS, '~q, ', [Prog]),
+	format(LogS, '~w, ', [PrecondNT]),
+	format(LogS, '~w ~n', [Time1])
+	.
 
 
 
@@ -490,7 +497,7 @@ split_clauses(F, FOut):-
 analyse_non_term(Prog2, WithInterpolant,Bounded) :-
 
     logfile_non_term(LogFile),
-	open(LogFile, append, LogS),
+	  open(LogFile, append, LogS),
     %write(LogS, 'processing file: '), write(LogS, Prog2), nl(LogS),
     prepare_resultdir_non-term(Prog2, ResultDir),
 
@@ -533,13 +540,18 @@ analyse_non_term(Prog2, WithInterpolant,Bounded) :-
     DIFF is END - START,
     write('=================precond non-termination==============='), nl,
     (Status=unsat ->
-    printNonTermOutput(LogS,F, 'may-terminating', WithInterpolant, DIFF);
-    printNonTermOutput(LogS,F, 'non-terminating', WithInterpolant, DIFF)
+			NtStatus='MAYBE'
+		;
+			NtStatus='NO'
     ),
+		printNonTermOutput(LogS,F, NtStatus, WithInterpolant, DIFF),
     Init=..[init|InitVars],
+		/* non-termination results, uncomment when result is desired */
+
     nl(LogS),
     write(LogS, Init), write(LogS, ' <-- '), write(LogS, PrecondNonTerm), nl(LogS),
     write(Init), write( ' <-- '), write(PrecondNonTerm), nl,
+
     close(LogS),
     end_resultdir(ResultDir).
 
@@ -601,6 +613,7 @@ check_reachability_loop_entry(InitVars, (InitConstr;InitConstrs), IntermedFile1,
     write('init constr seq'), write(InitConstr), nl,
     yices_init,
     precond_patt_2_dnf(InitConstr, InitVars, DNF),
+		write('DNF '), write(DNF), nl,
     yices_exit,
     % creates a program for checking reachability
     create_solve_recurrent_rechability_prg(DNF, IntermedFile1, IntermedFile2, PNT),
@@ -885,7 +898,7 @@ apply_PI_Horn(Prog1, F_Split, WithInterpolant,Bounded, SimplifiedSafePrecond) :-
         halt(1)
     ),
 */
-    
+
     initialise_tr_constrs,
     record_initial_states(Prog1,  InitStates, InitVars),
     verbose_message(['processing file: ']), verbose_message([Prog1]),
@@ -940,13 +953,13 @@ loops([],_,[]).
 
 loopPath(P,NLoop,Graph,As,Path) :-
 	path(P,P,Graph,NLoop,As,Path).
-	
+
 path(P,R,Graph,NLoop,As,[P|Path]) :-
 	member(P-Q,Graph),
 	member(Q,NLoop),
 	\+ member(Q,As),
 	pathContinue(Q,R,Graph,NLoop,[Q|As],Path).
-	
+
 pathContinue(R,R,_,_,_,[R]).
 pathContinue(Q,R,Graph,NLoop,As,Path) :-
 	Q \== R,
@@ -955,7 +968,7 @@ pathContinue(Q,R,Graph,NLoop,As,Path) :-
 showLoops(Ns) :-
 	write('Loops'),nl,
 	showLoopList(Ns).
-	
+
 showLoopList([]) :-
 	nl,nl.
 showLoopList([N|Ns]) :-
@@ -1480,7 +1493,7 @@ stripSuffix(F,F1) :-
 	name(P1,P1Name),
 	F1 =.. [P1|Xs],
 	!.
-	
+
 removeSuffixChars(FName,F1Name) :-
 	append("_query",_,Suff),
 	append(F1Name,Suff,FName),

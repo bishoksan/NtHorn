@@ -12,7 +12,7 @@
 :- use_module(ciao_yices(ciao_yices_2)).
 
 
-% negate(+DNF, -DNF).  
+% negate(+DNF, -DNF).
 % DNF ::= Conj (; Conj)*
 % Conj ::= [C] | [C|Conj]
 % C ::= X = Y | X >= Y | X =< Y | X > Y | X < Y |
@@ -56,6 +56,8 @@ dnf(L1, L2, Vs, F):-
 dnf_list_of_list(L1, L2, Vs, F):-
     simplify_disj_2_seq(L1, Vs, S1),
     simplify_disj_2_seq(L2, Vs, S2),
+		write(S1), nl,
+		write(S2), nl,
     dnf2(S1, S2, F1),
     disj_seq_2_list_list(F1, F).
 
@@ -82,13 +84,15 @@ dnf2( C3, (C1;C2),(R1;R2)):-
     !,
     dnf2(C3, C1, R1),
     dnf2(C3, C2, R2).
+
+dnf2(false,_, [false]):-!.
+dnf2(_,false, [false]):-!.
+dnf2([],_, [false]):-!. %empty list is false
+dnf2(_,[], [false]):-!.
+dnf2([false],_, [false]):-!.
+dnf2(_,[false], [false]):-!.
 dnf2(A,B, C):-
-    !,
     append(A,B,C).
-dnf2([],_, [false]). %empty list is false
-dnf2(_,[], [false]).
-dnf2([false],_, [false]).
-dnf2(_,[false], [false]).
 
 
 %simplification of disjuncts
@@ -203,7 +207,7 @@ is_list([_|T]) :-
 
 convertString(Q,Q1) :-
 	read_from_atom(Q,Q1).
-	
+
 
 negate([C1], NegC1) :-
 	!,
@@ -243,7 +247,7 @@ conjunct((C1;D2),D,D5) :-
 	disjunct(D3,D4,D5).
 conjunct(C1,D1,D2) :-
 	distribute(D1,C1,D2).
-	
+
 distribute((C1;D1),Cs,(C2;D2)) :-
 	!,
 	append(Cs,C1,C2),
@@ -251,7 +255,7 @@ distribute((C1;D1),Cs,(C2;D2)) :-
 distribute(C1,Cs,C2) :-
 	!,
 	append(Cs,C1,C2).
-	
+
 simplify((D1;D2),D5) :-
 	makePolyhedron(D1,H),
 	getConstraint(H,D3),
@@ -264,7 +268,7 @@ simplify(D1,D3) :-
 simplify(_,false).
 
 
-%precond pattern (S, not U) where S and U are lists of lists to dnf, DNF is also a list of list of S and not U
+%precond pattern (S, not U) where S and U are lists of lists of dnf, DNF is also a list of list of S and not U
 %TODO: FIXME, I am very inefficient
 
 precond_patt_2_dnf(([[true]], not(U)), Vs, DNF):-
@@ -293,12 +297,13 @@ precond_patt_2_dnf((S, not(U)), Vs, DNF):-
     %write('ever coming here '), write(S), nl,
     list_of_list_2_seq(U, USeq),
     negate(USeq, UNegated),
-    %write('U negated '), write(UNegated), nl,
+    write('U negated '), write(UNegated), nl,
     disj_seq_2_list_list3(UNegated, UNegatedLists, Vs),
-    %write('U list of list '), write(UNegatedLists), nl,
+    write('U list of list '), write(UNegatedLists), nl,
     dnf_list_of_list(S, UNegatedLists, Vs,  DNF1),
-    simplify_dnf_2_dnf(DNF1, Vs, DNF)
-    %write('final dnf s not u'), write(DNF), nl
+		write('U list of list 2'), write(DNF1), nl,
+    simplify_dnf_2_dnf(DNF1, Vs, DNF),
+    write('final dnf s not u'), write(DNF), nl
     .
 precond_patt_2_dnf(not(U), Vs, DNF):-
     !,
@@ -314,6 +319,3 @@ precond_patt_2_dnf(S, Vs, DNF):-
     simplify_dnf_2_dnf(S, Vs, DNF)
     %write('final dnf only safe'), write(S), nl
     .
-
-
-
